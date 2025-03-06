@@ -1,6 +1,7 @@
 using AuctionService.Consumers;
 using AuctionService.Data;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -49,8 +50,21 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var duendeUrl = builder.Configuration["services:identityservice:http:0"];
+        
+        options.Authority = duendeUrl;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters.ValidateAudience = false;
+        options.TokenValidationParameters.NameClaimType = "username";
+        options.TokenValidationParameters.ValidIssuers = [duendeUrl];
+    });
+
 var app = builder.Build();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

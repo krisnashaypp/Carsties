@@ -10,22 +10,25 @@ var rabbitmq = builder.AddRabbitMQ("messaging", password: rabbitPw)
     .WithDataVolume()
     .WithManagementPlugin(port: 15672);
 
-var auctionService = builder.AddProject<Projects.AuctionService>("auctionservice")
+var auctionService = builder.AddProject<Projects.AuctionService>("auctionservice");
+var searchService = builder.AddProject<Projects.SearchService>("searchservice");
+var identityService = builder.AddProject<Projects.IdentityService>("identityservice")
+    .WithReference(identityDb)
+    .WaitFor(identityDb);
+
+auctionService
     .WithReference(auctionsDb)
     .WithReference(rabbitmq)
+    .WithReference(identityService)
     .WaitFor(auctionsDb)
     .WaitFor(rabbitmq);
 
-var searchService = builder.AddProject<Projects.SearchService>("searchservice")
+searchService
     .WithReference(mongodb)
     .WithReference(rabbitmq)
     .WaitFor(mongodb)
     .WaitFor(rabbitmq)
     .WithReference(auctionService);
-
-// var identityService = builder.AddProject<Projects.IdentityService>("identityservice")
-//     .WithReference(identityDb)
-//     .WaitFor(identityDb);
 
 
 builder.Build().Run();
