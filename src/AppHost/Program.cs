@@ -15,6 +15,7 @@ var searchService = builder.AddProject<Projects.SearchService>("searchservice");
 var identityService = builder.AddProject<Projects.IdentityService>("identityservice")
     .WithReference(identityDb)
     .WaitFor(identityDb);
+var gatewayService = builder.AddProject<Projects.GatewayService>("gatewayservice");
 
 auctionService
     .WithReference(auctionsDb)
@@ -29,6 +30,11 @@ searchService
     .WaitFor(mongodb)
     .WaitFor(rabbitmq)
     .WithReference(auctionService);
+
+gatewayService
+    .WithReference(auctionService)
+    .WithReference(searchService)
+    .WithReference(identityService);
 
 
 builder.Build().Run();

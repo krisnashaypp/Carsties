@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuctionService\AuctionService.csproj" />
+    <ProjectReference Include="..\GatewayService\GatewayService.csproj" />
     <ProjectReference Include="..\IdentityService\IdentityService.csproj" />
     <ProjectReference Include="..\SearchService\SearchService.csproj" />
   </ItemGroup>

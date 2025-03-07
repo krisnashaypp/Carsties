@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +54,7 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var duendeUrl = builder.Configuration["services:identityservice:http:0"];
+        var duendeUrl = builder.GetServiceLocation(ServiceType.IDENTITY);
         
         options.Authority = duendeUrl;
         options.RequireHttpsMetadata = false;
