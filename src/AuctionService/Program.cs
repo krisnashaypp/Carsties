@@ -26,10 +26,13 @@ builder.Services.AddSerilog(Log.Logger);
 
 builder.Services.AddControllers();
 builder.AddServiceDefaults();
+
 builder.Services.AddDbContext<AuctionDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("auctions"));
 });
+builder.EnrichNpgsqlDbContext<AuctionDbContext>();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddMassTransit(x =>
 {
@@ -54,7 +57,7 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var duendeUrl = builder.GetServiceLocation(ServiceType.IDENTITY);
+        var duendeUrl = builder.GetServiceLocation(ServiceType.IDENTITY, "ConnectionStrings:identity");
         
         options.Authority = duendeUrl;
         options.RequireHttpsMetadata = false;

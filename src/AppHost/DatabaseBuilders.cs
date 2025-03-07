@@ -10,8 +10,8 @@ public class DatabaseBuilders
         var postgres = distributedApplicationBuilder.AddPostgres("postgres", port: 5432)
             .WithPgWeb()
             .WithDataVolume()
-            .WithLifetime(ContainerLifetime.Persistent);
-        //.WithEndpointProxySupport(false); KEEP RUNNING AND BEING CONNECTABLE EVEN WITHOUT ASPIRE
+            .WithLifetime(ContainerLifetime.Persistent)
+        .WithEndpointProxySupport(false); //KEEP RUNNING AND BEING CONNECTABLE EVEN WITHOUT ASPIRE
 #pragma warning restore ASPIREPROXYENDPOINTS001
 
         var auctionsDb = postgres.AddDatabase("auctions");

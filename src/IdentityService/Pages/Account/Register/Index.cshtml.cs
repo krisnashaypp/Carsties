@@ -42,7 +42,7 @@ public class Index : PageModel
             };
             
             var result = await _userManager.CreateAsync(user, Input.Password);
-
+            
             if (result.Succeeded)
             {
                 await _userManager.AddClaimsAsync(user, [
