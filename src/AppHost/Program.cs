@@ -21,6 +21,14 @@ var identityService = builder.AddProject<Projects.IdentityService>("identityserv
     .WaitFor(identityDb);
 var gatewayService = builder.AddProject<Projects.GatewayService>("gatewayservice");
 
+
+var webAppFrontend = builder
+    .AddNpmApp("frontend", "../../frontend/web-app", "dev")
+    .WithNpmPackageInstallation()
+    .WithHttpEndpoint(port: 3000, isProxied: false) 
+    .WithExternalHttpEndpoints()
+    .WithReference(gatewayService);
+
 auctionService
     .WithReference(auctionsDb)
     .WithReference(rabbitmq)

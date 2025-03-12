@@ -16,6 +16,7 @@
     <PackageReference Include="Aspire.Hosting.MongoDB" Version="9.1.0" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.1.0" />
     <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.1.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.NodeJS.Extensions" Version="9.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
   </ItemGroup>
 

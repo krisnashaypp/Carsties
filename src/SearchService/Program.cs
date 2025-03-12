@@ -1,4 +1,5 @@
 using MassTransit;
+using MongoDB.Driver;
 using Polly;
 using Polly.Extensions.Http;
 using SearchService.Consumers;
@@ -8,6 +9,8 @@ using SearchService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
+builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetConnectionString("MongoDbConnection")));
+builder.Services.AddSingleton<ItemRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddHttpClient<AuctionSvcHttpClient>(client =>
 {

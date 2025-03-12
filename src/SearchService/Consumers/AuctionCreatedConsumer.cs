@@ -1,12 +1,12 @@
 using AutoMapper;
 using Contracts;
 using MassTransit;
-using MongoDB.Entities;
+using SearchService.Data;
 using SearchService.Models;
 
 namespace SearchService.Consumers;
 
-public class AuctionCreatedConsumer(IMapper mapper) : IConsumer<AuctionCreated>
+public class AuctionCreatedConsumer(IMapper mapper, ItemRepository itemRepository) : IConsumer<AuctionCreated>
 {
     public async Task Consume(ConsumeContext<AuctionCreated> context)
     {
@@ -16,6 +16,6 @@ public class AuctionCreatedConsumer(IMapper mapper) : IConsumer<AuctionCreated>
 
         if (item.Model == "Foo") throw new ArgumentException("cannot sell cars with name of foo");
 
-        await item.SaveAsync();
+        await itemRepository.InsertItemAsync(item);
     }
 }

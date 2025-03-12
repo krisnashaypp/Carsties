@@ -1,9 +1,13 @@
-using MongoDB.Entities;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace SearchService.Models;
 
-public class Item : Entity
+public class Item
 {
+    [BsonId]
+    [BsonRepresentation(BsonType.String)]
+    public string Id { get; set; }
     public int ReservePrice { get; set; }
     public string Seller { get; set; }
     public string Winner { get; set; }
