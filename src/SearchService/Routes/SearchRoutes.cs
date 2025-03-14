@@ -17,7 +17,6 @@ public static class SearchRoutes
     }
     private static async Task<IResult> SearchItems([AsParameters] SearchParams searchParams, ItemRepository itemRepository)
     {
-
         var (items, totalCount, pageCount) = await itemRepository.SearchItems(searchParams);
  
         return Results.Ok(new {

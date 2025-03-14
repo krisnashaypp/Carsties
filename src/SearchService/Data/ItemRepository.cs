@@ -71,13 +71,12 @@ public class ItemRepository
     public async Task<(List<Item> Items, long TotalCount, int PageCount)> SearchItems(SearchParams searchParams)
     {
         var aggregation = BuildSearchAggregation(searchParams);
-        
+
         aggregation = ApplySorting(aggregation, searchParams);
-        
+
         var totalCount = await GetTotalCountAsync(searchParams);
-        
+
         aggregation = ApplyPagination(aggregation, searchParams);
-        
         var items = await aggregation.ToListAsync();
         
         var pageSize = searchParams.PageSize ?? 4;
@@ -90,12 +89,13 @@ public class ItemRepository
     private IAggregateFluent<Item> BuildSearchAggregation(SearchParams searchParams)
     {
         var aggregation = _collection.Aggregate();
-        
+
         if (!string.IsNullOrEmpty(searchParams.SearchTerm))
         {
             var searchDefinition = CreateSearchDefinition(searchParams.SearchTerm);
             aggregation = aggregation.Search(searchDefinition, indexName: "car");
         }
+
         var filter = BuildFilter(searchParams);
         aggregation = aggregation.Match(filter);
         return aggregation;
@@ -154,7 +154,7 @@ public class ItemRepository
     {
         return searchParams.OrderBy switch
         {
-            "make" => aggregation.SortBy(x => x.Make),
+            "make" => aggregation.SortBy(x => x.Make).ThenBy(x => x.Model),
             "new" => aggregation.SortByDescending(x => x.CreatedAt),
             _ => !string.IsNullOrEmpty(searchParams.SearchTerm)
                 ? aggregation.AppendStage<Item>(new BsonDocument("$sort",
@@ -181,7 +181,6 @@ public class ItemRepository
         var filter = BuildFilter(searchParams);
         countAggregation = countAggregation.Match(filter);
         
-        Console.WriteLine("REACHED COUNT");
         var result = await countAggregation.Count().FirstOrDefaultAsync();
         return result?.Count ?? 0;
     }
