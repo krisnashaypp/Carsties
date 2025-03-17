@@ -20,14 +20,16 @@ var identityService = builder.AddProject<Projects.IdentityService>("identityserv
     .WithReference(identityDb)
     .WaitFor(identityDb);
 var gatewayService = builder.AddProject<Projects.GatewayService>("gatewayservice");
-
+var bidsService = builder.AddProject<Projects.BiddingService>("bidsservice");
+var ntService = builder.AddProject<Projects.NotificationService>("notificationservice");
 
 var webAppFrontend = builder
-    .AddNpmApp("frontend", "../../frontend/web-app", "dev")
+    .AddNpmApp("frontendservice", "../../frontend/web-app", "dev")
     .WithNpmPackageInstallation()
     .WithHttpEndpoint(port: 3000, isProxied: false) 
     .WithExternalHttpEndpoints()
-    .WithReference(gatewayService);
+    .WithReference(gatewayService)
+    .WithReference(ntService);
 
 auctionService
     .WithReference(auctionsDb)
@@ -46,7 +48,22 @@ searchService
 gatewayService
     .WithReference(auctionService)
     .WithReference(searchService)
-    .WithReference(identityService);
+    .WithReference(identityService)
+    .WithReference(bidsService)
+    .WithReference(ntService)
+    .WithReference(webAppFrontend);
+
+bidsService
+    .WithReference(mongodb)
+    .WithReference(rabbitmq)
+    .WithReference(identityService)
+    .WithReference(auctionService)
+    .WaitFor(mongodb)
+    .WaitFor(rabbitmq);
+
+ntService
+    .WithReference(rabbitmq)
+    .WaitFor(rabbitmq);
 
 
 builder.Build().Run();

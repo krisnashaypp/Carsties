@@ -19,7 +19,7 @@ public class AuctionFinishedConsumer : IConsumer<AuctionFinished>
     public async Task Consume(ConsumeContext<AuctionFinished> context)
     {
         _logger.LogInformation("Consuming {contract} for auction {AuctionId}", nameof(AuctionFinished), context.Message.AuctionId);
-        var auction = await _dbContext.Auctions.FindAsync(context.Message.AuctionId);
+        var auction = await _dbContext.Auctions.FindAsync(Guid.Parse(context.Message.AuctionId));
 
         if (auction is null)
         {

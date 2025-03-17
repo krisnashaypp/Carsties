@@ -59,6 +59,51 @@ var routes = new[]
                 { "PathPattern", "api/search/{**catch-all}" }
             }
         }
+    },
+    new RouteConfig()
+    {
+        RouteId = "bidsWrite",
+        ClusterId = "bids",
+        AuthorizationPolicy = "default",
+        Match = new RouteMatch
+        {
+            Path = "/bids",
+            Methods = ["POST"]
+        },
+        Transforms = new List<Dictionary<string, string>>()
+        {
+            new()
+            {
+                { "PathPattern", "api/bids" }
+            }
+        }
+    },
+    new RouteConfig()
+    {
+        RouteId = "bidsRead",
+        ClusterId = "bids",
+        Match = new RouteMatch
+        {
+            Path = "/bids/{**catch-all}",
+            Methods = ["GET"]
+        },
+        Transforms = new List<Dictionary<string, string>>()
+        {
+            new()
+            {
+                { "PathPattern", "api/bids/{**catch-all}" }
+            }
+        }
+    },
+    new RouteConfig()
+    {
+        RouteId = "notification",
+        ClusterId = "notification",
+        CorsPolicy = "customPolicy",
+        Match = new RouteMatch
+        {
+            Path = "/notifications/{**catch-all}"
+        }
     }
 };
 
@@ -89,6 +134,32 @@ var clusters = new[]
                 }
             }
         }
+    },
+    new ClusterConfig()
+    {
+        ClusterId = "bids",
+        Destinations = new Dictionary<string, DestinationConfig>
+        {
+            {
+                "bidsApi", new DestinationConfig()
+                {
+                    Address = builder.GetServiceLocation(ServiceType.BIDS)
+                }
+            }
+        }
+    },
+    new ClusterConfig()
+    {
+        ClusterId = "notification",
+        Destinations = new Dictionary<string, DestinationConfig>
+        {
+            {
+                "notifyApi", new DestinationConfig()
+                {
+                    Address = builder.GetServiceLocation(ServiceType.NOTIFICATION)
+                }
+            }
+        }
     }
 };
 
@@ -107,9 +178,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters.ValidIssuers = [duendeUrl];
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("customPolicy", b =>
+    {
+        b.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .WithOrigins(builder.GetServiceLocation(ServiceType.FRONTEND));
+    });
+});
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.UseCors();
 
 app.MapReverseProxy();
 
