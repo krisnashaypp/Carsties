@@ -1,19 +1,23 @@
-import { auth } from "@/auth"
+import {auth} from "@/auth"
 
 const baseUrl = process.env["services__gatewayservice__http__0"]
 
 const handleResponse = async (response: Response) => {
     const text = await response.text()
-    const data = text && JSON.parse(text)
-    
-    if (response.ok)
-    {
-        return data || response.statusText
+    //const data = text && JSON.parse(text)
+    let data;
+    try {
+        data = JSON.parse(text)
+    } catch (e: any) {
+        data = text;
     }
-    else {
+
+    if (response.ok) {
+        return data || response.statusText
+    } else {
         const error = {
             status: response.status,
-            message: response.statusText
+            message: typeof data === "string" ? data :  response.statusText
         }
         return {error}
     }
@@ -23,9 +27,9 @@ const getCommonHeaders = async () => {
     const session = await auth()
     const headers = {
         "Content-type": "application/json",
-    } as HeadersInit & {Authorization?: string}
-    if(session?.accessToken) headers.Authorization = "Bearer " + session.accessToken
-    
+    } as HeadersInit & { Authorization?: string }
+    if (session?.accessToken) headers.Authorization = "Bearer " + session.accessToken
+
     return headers
 }
 
@@ -35,9 +39,9 @@ const get = async (url: string, init?: RequestInit) => {
         headers: await getCommonHeaders(),
         ...init
     }
-    
+
     const response = await fetch(baseUrl + url, requestOptions);
-    
+
     return handleResponse(response);
 }
 

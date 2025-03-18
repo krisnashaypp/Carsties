@@ -1,5 +1,6 @@
 using Contracts;
 using MassTransit;
+using NotificationService.Consumers;
 using NotificationService.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,7 @@ builder.AddServiceDefaults();
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumersFromNamespaceContaining<AuctionCreated>();
+    x.AddConsumersFromNamespaceContaining<BidPlacedConsumer>();
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("nt", false));
     
     x.UsingRabbitMq((context, cfg) =>
